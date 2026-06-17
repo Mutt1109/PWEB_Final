@@ -30,6 +30,17 @@ class AdminTicketController extends Controller
             'status' => 'required|in:Aktif,Terpakai,Dibatalkan',
         ]);
 
+        if ($validated['status'] == 'Dibatalkan' && $ticket->status != 'Dibatalkan') {
+            if ($ticket->match) {
+                $ticket->match->increment('kapasitas', $ticket->jumlah);
+            }
+        } elseif ($validated['status'] != 'Dibatalkan' && $ticket->status == 'Dibatalkan') {
+            if ($ticket->match) {
+                // Return to active, consume capacity
+                $ticket->match->decrement('kapasitas', $ticket->jumlah);
+            }
+        }
+
         $ticket->update(['status' => $validated['status']]);
 
         return back()->with('success', 'Status tiket berhasil diperbarui.');
@@ -40,6 +51,11 @@ class AdminTicketController extends Controller
      */
     public function destroy(Ticket $ticket)
     {
+        if ($ticket->status != 'Dibatalkan') {
+            if ($ticket->match) {
+                $ticket->match->increment('kapasitas', $ticket->jumlah);
+            }
+        }
         $ticket->delete();
 
         return back()->with('success', 'Tiket berhasil dihapus.');

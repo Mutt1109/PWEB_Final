@@ -62,6 +62,13 @@ class DashboardController extends Controller
         // Ambil data pertandingan untuk hitung total harga
         $match = IklMatch::findOrFail($validated['match_id']);
 
+        if ($match->kapasitas < $validated['jumlah']) {
+            return back()->withErrors(['jumlah' => 'Kapasitas tiket tidak mencukupi (Tersisa: ' . $match->kapasitas . ').'])->withInput();
+        }
+
+        // Kurangi stok / kapasitas
+        $match->decrement('kapasitas', $validated['jumlah']);
+
         // Simpan tiket ke database
         Ticket::create([
             'match_id'     => $validated['match_id'],
@@ -84,6 +91,9 @@ class DashboardController extends Controller
     {
         // Pastikan hanya pemilik tiket yang bisa membatalkannya
         if ($ticket->user_id === auth()->id()) {
+            if ($ticket->match) {
+                $ticket->match->increment('kapasitas', $ticket->jumlah);
+            }
             $ticket->delete();
             return redirect()->route('dashboard')->with('success', 'Booking tiket berhasil dibatalkan.');
         }

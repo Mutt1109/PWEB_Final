@@ -387,7 +387,7 @@
             var html = '<p class="text-xs text-gray-500 mb-3">Ditemukan ' + data.count + ' pertandingan</p>';
             data.data.forEach(function(m) {
                 var tgl = new Date(m.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-                html += '<div class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 mb-2 flex flex-wrap items-center justify-between gap-2">'
+                html += '<div onclick="selectMatch(' + m.id + ')" class="cursor-pointer hover:bg-gray-100 transition-colors bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 mb-2 flex flex-wrap items-center justify-between gap-2" title="Klik untuk memesan tiket ini">'
                       + '<div>'
                       + '<p class="font-semibold text-gray-800 text-sm">' + m.tim_tamu + ' <span class="text-ikl-600">vs</span> ' + m.tim_kandang + '</p>'
                       + '<p class="text-xs text-gray-500 mt-0.5">' + tgl + ' · ' + m.jam + ' WIB · ' + m.venue + '</p>'
@@ -403,6 +403,19 @@
             results.innerHTML = '<p class="text-red-500 text-sm italic">Gagal menghubungi server.</p>';
         }
     }
+
+    // Fungsi untuk handle klik pada hasil pencarian
+    window.selectMatch = function(id) {
+        var matchSelect = document.getElementById('match_id');
+        matchSelect.value = id;
+        
+        // Trigger event 'change' agar estimasi harga update
+        var event = new Event('change');
+        matchSelect.dispatchEvent(event);
+        
+        // Scroll layar ke form booking
+        document.getElementById('form-booking').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
 
     // Live search: cari otomatis saat user mengetik (debounced 400ms)
     input.addEventListener('input', function() {
