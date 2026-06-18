@@ -25,7 +25,7 @@ Route::middleware('auth')->group(function () {
 
     // Dashboard: halaman utama user (lihat jadwal + booking tiket)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
+    
     // CRUD Tiket (Create, Delete = di dashboard)
     Route::post('/tickets', [DashboardController::class, 'store'])->name('tickets.store');
     Route::delete('/tickets/{ticket}/cancel', [DashboardController::class, 'destroy'])->name('tickets.cancel');

@@ -39,7 +39,7 @@
                 <div class="hidden md:flex items-center gap-1">
                     @auth
                         @if(auth()->user()->role !== 'admin')
-                        <a href="{{ route('dashboard') }}"
+                        <a href="{{ route('dashboard') }}"  
                            class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('dashboard') ? 'bg-ikl-50 text-ikl-700' : 'text-gray-600 hover:bg-gray-100' }} transition">
                             Dashboard
                         </a>
